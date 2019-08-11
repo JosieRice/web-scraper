@@ -20,7 +20,16 @@ const puppeteer = require("puppeteer");
   // );
 
   console.log("h1", h1);
+
+  let jsonRecipe = {
+    'title': h1[0]
+  }
+
+  console.log("json", jsonRecipe)
   // console.log("Ingredients", Ingredients);
+
+  // res.json({ username: 'Flavio' })
+  app.get('/', (req, res) => res.json(jsonRecipe))
 
   await browser.close();
 })();
@@ -30,6 +39,9 @@ if (port == null || port == "") {
   port = 8000;
 }
 
-app.get('/', (req, res) => res.send('Hello World!'))
+// app.get('/', (req, res) => res.send('Hello World!'))
+// app.get('/', (req, res) => res.json({ json: 'Hello World!' }))
+
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
