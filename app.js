@@ -3,6 +3,17 @@ const app = express()
 const puppeteer = require("puppeteer");
 const bodyParser = require('body-parser');
 
+// CORS
+app.use(function (req, res, next) {
+  // Instead of "*" you should enable only specific origins
+  res.header('Access-Control-Allow-Origin', '*');
+  // Supported HTTP verbs
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  // Other custom headers
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 // Parse incoming requests data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
