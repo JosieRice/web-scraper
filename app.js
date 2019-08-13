@@ -3,6 +3,11 @@ const app = express()
 const puppeteer = require("puppeteer");
 const bodyParser = require('body-parser');
 
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
+
 // CORS
 app.use(function (req, res, next) {
   // Instead of "*" you should enable only specific origins
@@ -21,8 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const buzzFeed = async (input) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  const url =
-    "https://www.buzzfeed.com/pierceabernathy/bacon-avocado-brussels-sprout-salad-with-lemon-vinaigrette?utm_term=.oaavdq2mM#.sbezB7ndD";
+  const url = input;
   await page.goto(url);
 
   const title = await page.evaluate(() =>
@@ -37,60 +41,31 @@ const buzzFeed = async (input) => {
     Array.from(document.getElementById("mod-subbuzz-text-2").children).map(title => title.innerText)
   );
 
-  console.log('title', title)
-  console.log('ingredients', ingredients);
-  console.log('instructions', instructions);
-
-  // const Ingredients = await page.evaluate(() =>
-  //   // grabs the whole ingredients block
-  //   Array.from(document.querySelectorAll("#mod-subbuzz-text-1"))
-  // );
-
   let jsonRecipe = {
     'title': title,
     'ingredients': ingredients,
     'instructions': instructions
   }
 
-
-
-  // app.get('/', (req, res) => res.json(jsonRecipe))
-
   await browser.close();
-  console.log('jsonRecipe', jsonRecipe)
   return jsonRecipe
 };
 
-let port = process.env.PORT;
-if (port == null || port == "") {
-  port = 8000;
-}
-
-// take a recipe URL
-app.post('/api/v1/recipes', (req, res) => {
+// take a recipe URL and return the recipe info
+app.post('/api/v1/recipes', async (req, res) => {
   if (!req.body.url) {
     return res.status(400).send({
-      success: 'false',
-      message: 'url'
+      success: "false",
+      message: "didn't get a url in body"
     });
   }
-  const url = req.body.url
-  console.log('url input: ', url)
+
+  const url = req.body.url;
+  const recipe = await buzzFeed(url);
+
   return res.status(201).send({
-    success: 'true',
-    message: 'recipe url received',
-    url
-  })
-});
-
-
-// sends buzzfeed recipe info back with API
-app.get('/api/v1/recipes', async (req, res) => {
-  const recipe = await buzzFeed();
-
-  res.status(200).send({
-    success: 'true',
-    message: 'todos retrieved successfully',
+    success: "true",
+    message: `sent ${url} => here's what we found`,
     recipe
   })
 });
