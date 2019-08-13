@@ -18,24 +18,28 @@ app.use(function (req, res, next) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const todos = [
-  {
-    id: 1,
-    title: "lunch",
-    description: "Go for lunc by 2pm"
-  }
-];
-
-(async () => {
+const buzzFeed = async (input) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const url =
     "https://www.buzzfeed.com/pierceabernathy/bacon-avocado-brussels-sprout-salad-with-lemon-vinaigrette?utm_term=.oaavdq2mM#.sbezB7ndD";
   await page.goto(url);
 
-  const h1 = await page.evaluate(() =>
+  const title = await page.evaluate(() =>
     Array.from(document.querySelectorAll("h1")).map(title => title.innerText)
   );
+
+  const ingredients = await page.evaluate(() =>
+    Array.from(document.getElementById("mod-subbuzz-text-1").children).map(title => title.innerText)
+  );
+
+  const instructions = await page.evaluate(() =>
+    Array.from(document.getElementById("mod-subbuzz-text-2").children).map(title => title.innerText)
+  );
+
+  console.log('title', title)
+  console.log('ingredients', ingredients);
+  console.log('instructions', instructions);
 
   // const Ingredients = await page.evaluate(() =>
   //   // grabs the whole ingredients block
@@ -43,13 +47,19 @@ const todos = [
   // );
 
   let jsonRecipe = {
-    'title': h1[0]
+    'title': title,
+    'ingredients': ingredients,
+    'instructions': instructions
   }
 
-  app.get('/', (req, res) => res.json(jsonRecipe))
+
+
+  // app.get('/', (req, res) => res.json(jsonRecipe))
 
   await browser.close();
-})();
+  console.log('jsonRecipe', jsonRecipe)
+  return jsonRecipe
+};
 
 let port = process.env.PORT;
 if (port == null || port == "") {
@@ -73,12 +83,15 @@ app.post('/api/v1/recipes', (req, res) => {
   })
 });
 
-// get recipe information
-app.get('/api/v1/recipes', (req, res) => {
+
+// sends buzzfeed recipe info back with API
+app.get('/api/v1/recipes', async (req, res) => {
+  const recipe = await buzzFeed();
+
   res.status(200).send({
     success: 'true',
     message: 'todos retrieved successfully',
-    recipes: todos
+    recipe
   })
 });
 
