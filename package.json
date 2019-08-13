@@ -4,10 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "node_modules/.bin/nodemon src/app.js --exec babel-node --",
-    "clean": "rm -rf build && mkdir build",
-    "build-babel": "babel -d ./build ./src -s",
-    "build": "npm run clean && npm run build-babel"
+    "dev": "nodemon src/app.js"
   },
   "author": "Craig Rice",
   "license": "ISC",
