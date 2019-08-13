@@ -6,3 +6,7 @@ https://malcoded.com/posts/react-http-requests-axios/
 
 Heroku Deploy
 git push heroku master
+
+
+
+git subtree push --prefix build heroku master
