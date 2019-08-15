@@ -11,6 +11,7 @@ if (port == null || port == "") {
 
 // CORS
 app.use(function (req, res, next) {
+  console.log('in CORS function')
   // Instead of "*" you should enable only specific origins
   res.header('Access-Control-Allow-Origin', '*');
   // Supported HTTP verbs
@@ -25,6 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const buzzFeed = async (input) => {
+  console.log("in buzzfeed function")
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const url = input;
@@ -54,6 +56,7 @@ const buzzFeed = async (input) => {
 
 // take a recipe URL and return the recipe info
 app.post('/api/v1/recipes', async (req, res) => {
+  console.log('in post function')
   if (!req.body.url) {
     return res.status(400).send({
       success: "false",
