@@ -27,10 +27,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const buzzFeed = async (input) => {
   console.log("in buzzfeed function")
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
   const url = input;
-  await page.goto(url);
+  try {
+    await page.goto(url);
+  } catch (e) {
+    console.log(e)
+  }
+
 
   const title = await page.evaluate(() =>
     Array.from(document.querySelectorAll("h1")).map(title => title.innerText)
