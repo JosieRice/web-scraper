@@ -1,8 +1,10 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
-
+console.log('START OF APP')
 const app = express();
+
+
 
 let port = process.env.PORT;
 if (port == null || port == "") {
@@ -20,6 +22,8 @@ app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+
+console.log('what is app', app)
 
 // Parse incoming requests data
 app.use(bodyParser.json());
