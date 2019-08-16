@@ -72,12 +72,22 @@ app.post('/api/v1/recipes', async (req, res) => {
   }
 
   const url = req.body.url;
-  const recipe = await buzzFeed(url).catch((e) => console.log(e));
+
+  async function buzzFeedPromise() {
+    try {
+      const recipe = await buzzFeed(url);
+      return recipe;
+    } catch (e) {
+      console.log(e)
+      return "error"
+    }
+  }
+
 
   return res.status(201).send({
     success: "true",
     message: `sent ${url} => here's what we found`,
-    recipe
+    recipe: buzzFeedPromise()
   })
 });
 
