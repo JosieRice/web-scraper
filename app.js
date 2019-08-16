@@ -1,10 +1,8 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
-console.log('START OF APP')
+
 const app = express();
-
-
 
 let port = process.env.PORT;
 if (port == null || port == "") {
@@ -13,7 +11,6 @@ if (port == null || port == "") {
 
 // CORS
 app.use(function (req, res, next) {
-  console.log('in CORS function')
   // Instead of "*" you should enable only specific origins
   res.header('Access-Control-Allow-Origin', '*');
   // Supported HTTP verbs
@@ -74,12 +71,12 @@ app.post('/api/v1/recipes', async (req, res) => {
   }
 
   const url = req.body.url;
-  const recipe = await buzzFeed(url);
+  // const recipe = await buzzFeed(url);
 
   return res.status(201).send({
     success: "true",
     message: `sent ${url} => here's what we found`,
-    recipe
+    recipe: "recipe"
   })
 });
 
