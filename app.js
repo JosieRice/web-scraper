@@ -1,8 +1,10 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
-
+console.log('START OF APP')
 const app = express();
+
+
 
 let port = process.env.PORT;
 if (port == null || port == "") {
