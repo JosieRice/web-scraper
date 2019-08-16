@@ -28,37 +28,35 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const buzzFeed = async (input) => {
   console.log("in buzzfeed function")
+
+  // TODO: puppeteer doesn't work 
+  // https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-on-heroku
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
-  // const url = input;
-  // try {
+  const url = input;
   await page.goto(url);
-  // } catch (e) {
-  //   console.log(e)
-  // }
 
+  const title = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("h1")).map(title => title.innerText)
+  );
 
-  // const title = await page.evaluate(() =>
-  //   Array.from(document.querySelectorAll("h1")).map(title => title.innerText)
-  // );
+  const ingredients = await page.evaluate(() =>
+    Array.from(document.getElementById("mod-subbuzz-text-1").children).map(title => title.innerText)
+  );
 
-  // const ingredients = await page.evaluate(() =>
-  //   Array.from(document.getElementById("mod-subbuzz-text-1").children).map(title => title.innerText)
-  // );
+  const instructions = await page.evaluate(() =>
+    Array.from(document.getElementById("mod-subbuzz-text-2").children).map(title => title.innerText)
+  );
 
-  // const instructions = await page.evaluate(() =>
-  //   Array.from(document.getElementById("mod-subbuzz-text-2").children).map(title => title.innerText)
-  // );
+  let jsonRecipe = {
+    'title': title,
+    'ingredients': ingredients,
+    'instructions': instructions
+  }
 
-  // let jsonRecipe = {
-  //   'title': title,
-  //   'ingredients': ingredients,
-  //   'instructions': instructions
-  // }
-
-  // await browser.close();
-  // return jsonRecipe
-  return "from buzzfeed"
+  await browser.close();
+  return jsonRecipe
+  // return "from buzzfeed"
 };
 
 // take a recipe URL and return the recipe info
@@ -72,22 +70,12 @@ app.post('/api/v1/recipes', async (req, res) => {
   }
 
   const url = req.body.url;
-
-  async function buzzFeedPromise() {
-    try {
-      const recipe = await buzzFeed(url);
-      return recipe;
-    } catch (e) {
-      console.log(e)
-      return "error"
-    }
-  }
-
+  const recipe = await buzzFeed(url);
 
   return res.status(201).send({
     success: "true",
     message: `sent ${url} => here's what we found`,
-    recipe: buzzFeedPromise()
+    recipe
   })
 });
 
