@@ -31,6 +31,7 @@ const buzzFeed = async (input) => {
 
   // TODO: puppeteer doesn't work 
   // https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-on-heroku
+
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
   const url = input;
