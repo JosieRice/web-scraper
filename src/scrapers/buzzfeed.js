@@ -2,7 +2,6 @@
 import puppeteer from "puppeteer";
 
 export const buzzFeed = async input => {
-  console.log("in buzzfeed function");
   const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
   const page = await browser.newPage();
   const url = input;
@@ -12,25 +11,30 @@ export const buzzFeed = async input => {
     Array.from(document.querySelectorAll("h1")).map(title => title.innerText)
   );
 
-  const ingredients = await page.evaluate(() =>
+  let ingredientsDirty = await page.evaluate(() =>
     Array.from(document.getElementById("mod-subbuzz-text-1").children).map(
       title => title.innerText
     )
   );
 
-  const instructions = await page.evaluate(() =>
+  const ingredients = ingredientsDirty
+    .filter(Boolean)
+
+  const instructionsDirty = await page.evaluate(() =>
     Array.from(document.getElementById("mod-subbuzz-text-2").children).map(
       title => title.innerText
     )
   );
 
+  const instructions = instructionsDirty
+    .filter(Boolean)
+
   let jsonRecipe = {
-    title: title,
+    title: title[0],
     ingredients: ingredients,
     instructions: instructions
   };
 
   await browser.close();
   return jsonRecipe;
-  // return "from buzzfeed"
 };

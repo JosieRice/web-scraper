@@ -2,6 +2,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { buzzFeed } from "./scrapers/buzzfeed";
+import { extractHostname } from "./utilities";
 
 const app = express();
 
@@ -30,7 +31,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // take a recipe URL and return the recipe info
 app.post("/api/v1/recipes", async (req, res) => {
-  console.log("in post function");
   if (!req.body.url) {
     return res.status(400).send({
       success: "false",
@@ -39,7 +39,16 @@ app.post("/api/v1/recipes", async (req, res) => {
   }
 
   const url = req.body.url;
-  const recipe = await buzzFeed(url);
+
+  const domain = extractHostname(url);
+
+  let recipe;
+
+  if (domain === 'buzzfeed') {
+    recipe = await buzzFeed(url);
+  } else {
+    recipe = {}
+  }
 
   return res.status(201).send({
     success: "true",
