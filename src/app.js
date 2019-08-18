@@ -1,6 +1,7 @@
-import express from 'express';
-const puppeteer = require('puppeteer');
-const bodyParser = require('body-parser');
+// @ts-check
+import express from "express";
+import bodyParser from "body-parser";
+import { buzzFeed } from "./scrapers/buzzfeed";
 
 const app = express();
 
@@ -12,11 +13,14 @@ if (port == null || port == "") {
 // CORS
 app.use(function (req, res, next) {
   // Instead of "*" you should enable only specific origins
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Origin", "*");
   // Supported HTTP verbs
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   // Other custom headers
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   next();
 });
 
@@ -24,39 +28,9 @@ app.use(function (req, res, next) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const buzzFeed = async (input) => {
-  console.log("in buzzfeed function")
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
-  const page = await browser.newPage();
-  const url = input;
-  await page.goto(url);
-
-  const title = await page.evaluate(() =>
-    Array.from(document.querySelectorAll("h1")).map(title => title.innerText)
-  );
-
-  const ingredients = await page.evaluate(() =>
-    Array.from(document.getElementById("mod-subbuzz-text-1").children).map(title => title.innerText)
-  );
-
-  const instructions = await page.evaluate(() =>
-    Array.from(document.getElementById("mod-subbuzz-text-2").children).map(title => title.innerText)
-  );
-
-  let jsonRecipe = {
-    'title': title,
-    'ingredients': ingredients,
-    'instructions': instructions
-  }
-
-  await browser.close();
-  return jsonRecipe
-  // return "from buzzfeed"
-};
-
 // take a recipe URL and return the recipe info
-app.post('/api/v1/recipes', async (req, res) => {
-  console.log('in post function')
+app.post("/api/v1/recipes", async (req, res) => {
+  console.log("in post function");
   if (!req.body.url) {
     return res.status(400).send({
       success: "false",
@@ -71,7 +45,7 @@ app.post('/api/v1/recipes', async (req, res) => {
     success: "true",
     message: `sent ${url} => here's what we found`,
     recipe
-  })
+  });
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
