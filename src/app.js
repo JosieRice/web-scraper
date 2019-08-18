@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
 
@@ -20,18 +20,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-console.log('what is app', app)
-
 // Parse incoming requests data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const buzzFeed = async (input) => {
   console.log("in buzzfeed function")
-
-  // TODO: puppeteer doesn't work 
-  // https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-on-heroku
-
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
   const url = input;
