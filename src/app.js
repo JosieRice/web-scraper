@@ -3,6 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { buzzFeed } from "./scrapers/buzzfeed";
 import { extractHostname } from "./utilities";
+import { lastTry } from "./scrapers/lastTry";
 
 const app = express();
 
@@ -40,14 +41,14 @@ app.post("/api/v1/recipes", async (req, res) => {
 
   const url = req.body.url;
 
-  const domain = extractHostname(url);
+  const hostname = extractHostname(url);
 
   let recipe;
 
-  if (domain === 'buzzfeed') {
+  if (hostname === 'www.buzzfeed.com') {
     recipe = await buzzFeed(url);
   } else {
-    recipe = {}
+    recipe = await lastTry(url);
   }
 
   return res.status(201).send({

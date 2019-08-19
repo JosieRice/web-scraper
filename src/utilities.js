@@ -13,7 +13,5 @@ export function extractHostname(url) {
   //find & remove "?"
   hostname = hostname.split('?')[0];
 
-  const result = hostname.match(/^www\.(.*)\.com$/)[1];
-
-  return result;
+  return hostname;
 }
