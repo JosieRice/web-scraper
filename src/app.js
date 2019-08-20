@@ -46,9 +46,21 @@ app.post("/api/v1/recipes", async (req, res) => {
   let recipe;
 
   if (hostname === 'www.buzzfeed.com') {
-    recipe = await buzzFeed(url);
+
+    try {
+      recipe = await buzzFeed(url);
+    } catch (e) {
+      console.log('error', e)
+    }
+
   } else {
-    recipe = await lastTry(url);
+
+    try {
+      recipe = await lastTry(url);
+    } catch (e) {
+      console.log('error', e)
+    }
+
   }
 
   return res.status(201).send({
