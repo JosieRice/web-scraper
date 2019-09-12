@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import { buzzFeed } from "./scrapers/buzzfeed";
 import { extractHostname } from "./utilities";
 import { lastTry } from "./scrapers/lastTry";
+import { wholekitchensink } from "./scrapers/wholekitchensink";
 
 const app = express();
 
@@ -45,10 +46,18 @@ app.post("/api/v1/recipes", async (req, res) => {
 
   let recipe;
 
-  if (hostname === 'www.buzzfeed.com') {
+  if (hostname === 'www.buzzfeed.com' || hostname === "buzzfeed.com") {
 
     try {
       recipe = await buzzFeed(url);
+    } catch (e) {
+      console.log('error', e)
+    }
+
+  } else if (hostname === 'www.wholekitchensink.com' || hostname === "wholekitchensink.com") {
+
+    try {
+      recipe = await wholekitchensink(url);
     } catch (e) {
       console.log('error', e)
     }

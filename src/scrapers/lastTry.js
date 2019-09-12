@@ -1,11 +1,21 @@
 // @ts-check
 import puppeteer from "puppeteer";
 
-export const lastTry = async input => {
-  console.log('START');
+export const lastTry = async url => {
+  console.log('LAST TRY');
+  // TODO: Move this to utilities to be reused
   const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
   const page = await browser.newPage();
-  const url = input;
+  await page.setDefaultNavigationTimeout(0);
+  await page.setRequestInterception(true);
+  page.on('request', (req) => {
+    if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image') {
+      req.abort();
+    }
+    else {
+      req.continue();
+    }
+  });
 
   try {
     await page.goto(url);
